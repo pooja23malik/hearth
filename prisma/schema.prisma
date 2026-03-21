@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Board {
+  id           String   @id @default(uuid())
+  name         String
+  invite_token String   @unique @default(uuid())
+  timezone     String?
+  created_at   DateTime @default(now())
+
+  members Member[]
+  tasks   Task[]
+
+  @@map("boards")
+}
+
+model Member {
+  id           String   @id @default(uuid())
+  board_id     String
+  name         String
+  avatar_color String
+  is_creator   Boolean  @default(false)
+  active       Boolean  @default(true)
+  created_at   DateTime @default(now())
+
+  board             Board         @relation(fields: [board_id], references: [id], onDelete: Cascade)
+  created_tasks     Task[]        @relation("TaskCreator")
+  assigned_tasks    Task[]        @relation("TaskAssignee")
+  completed_tasks   Task[]        @relation("TaskCompleter")
+  task_completions  TaskHistory[] @relation("HistoryCompleter")
+
+  @@unique([board_id, name])
+  @@map("members")
+}
+
+enum TaskCategory {
+  home_maintenance
+  health
+  errands
+  personal
+  other
+}
+
+enum TimeOfDay {
+  morning
+  afternoon
+  evening
+  anytime
+}
+
+enum RecurrenceRule {
+  daily
+  weekly
+  biweekly
+  monthly
+  every_3_months
+  every_6_months
+  yearly
+}
+
+enum TaskStatus {
+  pending
+  completed
+}
+
+model Task {
+  id                        String          @id @default(uuid())
+  board_id                  String
+  title                     String
+  description               String?
+  category                  TaskCategory    @default(other)
+  estimated_duration_minutes Int?
+  assigned_to               String?
+  is_personal               Boolean         @default(false)
+  preferred_time_of_day     TimeOfDay       @default(anytime)
+  recurrence_rule           RecurrenceRule?
+  next_due_date             DateTime?       @db.Date
+  status                    TaskStatus      @default(pending)
+  created_by                String
+  created_at                DateTime        @default(now())
+  completed_at              DateTime?
+  completed_by              String?
+
+  board     Board    @relation(fields: [board_id], references: [id], onDelete: Cascade)
+  creator   Member   @relation("TaskCreator", fields: [created_by], references: [id])
+  assignee  Member?  @relation("TaskAssignee", fields: [assigned_to], references: [id])
+  completer Member?  @relation("TaskCompleter", fields: [completed_by], references: [id])
+  history   TaskHistory[]
+
+  @@map("tasks")
+}
+
+model TaskHistory {
+  id           String   @id @default(uuid())
+  task_id      String
+  board_id     String
+  completed_by String
+  completed_at DateTime @default(now())
+  notes        String?
+
+  task      Task   @relation(fields: [task_id], references: [id], onDelete: Cascade)
+  completer Member @relation("HistoryCompleter", fields: [completed_by], references: [id])
+
+  @@map("task_history")
+}
