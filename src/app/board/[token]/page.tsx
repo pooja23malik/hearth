@@ -89,13 +89,26 @@ export default function BoardPage() {
     return () => eventSource.close();
   }, [authenticated, loadTasks]);
 
-  async function handleComplete(taskId: string) {
+  async function handleComplete(taskId: string): Promise<{ recurring: boolean; nextDue?: string } | null> {
     const res = await fetch(`/api/tasks/${taskId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: "completed" }),
     });
-    if (res.ok) loadTasks();
+    if (!res.ok) return null;
+    const data = await res.json();
+    // If the task came back as pending, it was recurring and reset
+    const recurring = data.status === "pending" && data.recurrence_rule;
+    // Delay the list refresh so the celebration animation can play
+    if (recurring) {
+      setTimeout(() => loadTasks(), 2000);
+    } else {
+      loadTasks();
+    }
+    return {
+      recurring: !!recurring,
+      nextDue: data.next_due_date,
+    };
   }
 
   function handleMemberSelected() {
