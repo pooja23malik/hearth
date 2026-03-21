@@ -67,7 +67,7 @@ export default function TaskCard({
         disabled={completing || task.status === "completed"}
         className={`mt-0.5 flex h-6 w-6 min-w-[24px] items-center justify-center rounded-md border-2 transition-colors ${
           task.status === "completed"
-            ? "border-success bg-success text-white"
+            ? "border-accent bg-accent text-white"
             : completing
               ? "border-accent animate-pulse"
               : "border-gray-300 hover:border-accent"
