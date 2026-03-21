@@ -10,7 +10,8 @@ export async function GET(request: NextRequest) {
 
   const tab = request.nextUrl.searchParams.get("tab") || "all";
 
-  const baseWhere = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const where: any = {
     board_id: auth.board.id,
     OR: [
       { is_personal: false },
@@ -18,16 +19,11 @@ export async function GET(request: NextRequest) {
     ],
   };
 
-  let where = baseWhere;
-
   if (tab === "my") {
-    where = { ...baseWhere, assigned_to: auth.member.id };
+    where.assigned_to = auth.member.id;
   } else if (tab === "overdue") {
-    where = {
-      ...baseWhere,
-      status: "pending" as const,
-      next_due_date: { lt: new Date() },
-    };
+    where.status = "pending";
+    where.next_due_date = { lt: new Date() };
   }
 
   const tasks = await prisma.task.findMany({

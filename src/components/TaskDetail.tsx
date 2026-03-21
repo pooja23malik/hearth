@@ -1,35 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-type Task = {
-  id: string;
-  title: string;
-  description: string | null;
-  status: string;
-  category: string;
-  estimated_duration_minutes: number | null;
-  recurrence_rule: string | null;
-  next_due_date: string | null;
-  is_personal: boolean;
-  preferred_time_of_day: string;
-  assigned_to: string | null;
-  assignee: { id: string; name: string; avatar_color: string } | null;
-  creator: { id: string; name: string; avatar_color: string } | null;
-};
-
-type HistoryEntry = {
-  id: string;
-  completed_at: string;
-  notes: string | null;
-  completer: { name: string; avatar_color: string };
-};
-
-type Member = {
-  id: string;
-  name: string;
-  avatar_color: string;
-};
+import type { Task, HistoryEntry, Member } from "@/lib/types";
 
 export default function TaskDetail({
   task,

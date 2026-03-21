@@ -139,7 +139,7 @@ export default function MemberPicker({
                     }`}
                     style={{
                       backgroundColor: c.value,
-                      ringColor: c.value,
+                      outlineColor: c.value,
                     }}
                     title={c.name}
                   />

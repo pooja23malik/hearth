@@ -1,21 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
-type Task = {
-  id: string;
-  title: string;
-  status: string;
-  category: string;
-  estimated_duration_minutes: number | null;
-  recurrence_rule: string | null;
-  next_due_date: string | null;
-  is_personal: boolean;
-  assigned_to: string | null;
-  assignee: { id: string; name: string; avatar_color: string } | null;
-  completer: { id: string; name: string } | null;
-  completed_at: string | null;
-};
+import type { Task } from "@/lib/types";
 
 const RECURRENCE_LABELS: Record<string, string> = {
   daily: "Daily",

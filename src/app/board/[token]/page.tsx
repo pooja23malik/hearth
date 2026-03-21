@@ -8,22 +8,7 @@ import AddTask from "@/components/AddTask";
 import TaskDetail from "@/components/TaskDetail";
 import BoardSettings from "@/components/BoardSettings";
 
-type Member = { id: string; name: string; avatar_color: string; is_creator: boolean };
-type Task = {
-  id: string; title: string; description: string | null; status: string;
-  category: string; estimated_duration_minutes: number | null;
-  recurrence_rule: string | null; next_due_date: string | null;
-  is_personal: boolean; preferred_time_of_day: string;
-  assigned_to: string | null;
-  assignee: { id: string; name: string; avatar_color: string } | null;
-  creator: { id: string; name: string; avatar_color: string } | null;
-  completer: { id: string; name: string } | null;
-  completed_at: string | null;
-};
-type Board = {
-  id: string; name: string; invite_token: string; timezone: string | null;
-  members: Member[];
-};
+import type { Member, Task, Board } from "@/lib/types";
 
 const TABS = [
   { key: "all", label: "All" },
