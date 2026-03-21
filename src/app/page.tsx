@@ -63,7 +63,7 @@ export default function HomePage() {
           <button
             type="submit"
             disabled={loading || !boardName.trim()}
-            className="w-full rounded-lg bg-accent px-4 py-3 text-lg font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full rounded-lg bg-accent px-4 py-3 text-lg font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-gray-300"
           >
             {loading ? "Creating..." : "Create Board"}
           </button>
