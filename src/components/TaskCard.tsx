@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Task } from "@/lib/types";
 
 const RECURRENCE_LABELS: Record<string, string> = {
@@ -36,6 +36,13 @@ export default function TaskCard({
 }) {
   const [completing, setCompleting] = useState(false);
   const overdue = isOverdue(task);
+
+  // Reset completing state when task status changes (e.g., recurring task resets to pending)
+  useEffect(() => {
+    if (task.status === "pending") {
+      setCompleting(false);
+    }
+  }, [task.status, task.completed_at]);
 
   async function handleComplete(e: React.MouseEvent) {
     e.stopPropagation();
