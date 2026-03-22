@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Family Tasks",
+  title: "Hearth",
   description: "Family tasks, finally organized.",
   manifest: "/manifest.json",
 };

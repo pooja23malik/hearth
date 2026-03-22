@@ -119,7 +119,7 @@ export default function BoardPage() {
   // Update page title
   useEffect(() => {
     if (board) {
-      document.title = `${board.name} — Family Tasks`;
+      document.title = `$${board.name} — Hearth`;
     }
   }, [board]);
 

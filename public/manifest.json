@@ -1,6 +1,6 @@
 {
-  "name": "Family Tasks",
-  "short_name": "Tasks",
+  "name": "Hearth",
+  "short_name": "Hearth",
   "description": "Family tasks, finally organized.",
   "start_url": "/",
   "display": "standalone",
