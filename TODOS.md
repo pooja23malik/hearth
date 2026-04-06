@@ -16,12 +16,16 @@
 **How:** Board creator can confirm "yes, this is Pooja" which transfers the old member record to the new cookie. Requires a "claim identity" flow in Board Settings.
 **Priority:** Solve when someone actually hits this — not blocking v1.
 
-### Create DESIGN.md
-**What:** Extract design tokens and visual identity decisions into a proper DESIGN.md file.
-**Why:** Design tokens (colors, spacing, radii, typography) are currently embedded in the implementation plan. Before building v2 UI (AI Time Coach chat interface, weekly dashboard), these should be centralized in DESIGN.md to ensure visual consistency across features.
-**Effort:** human: ~2 hours / CC: ~15 min (or run `/design-consultation` for a comprehensive version)
-**How:** Extract the design tokens from the implementation plan, add component patterns, document the "warm minimal" visual identity, and include the responsive breakpoints and accessibility requirements.
-**Priority:** Do before starting v2 UI work.
+### ~~Create DESIGN.md~~ ✅ DONE (2026-04-05)
+Created via `/design-consultation`. Includes Fraunces + DM Sans typography, warm teal palette, full component patterns, accessibility specs, and dark mode strategy.
+
+### Expand values beyond 1:1 category mapping (v2)
+**What:** Add more granular preset values (e.g., "Fitness", "Nutrition", "Cooking" as separate options) and expand the `TaskCategory` enum to support many-to-many value-category mapping.
+**Why:** v1 is limited to 5 values mapping 1:1 to 5 categories. Families may want finer-grained values for more meaningful alignment tracking. The 1:1 constraint was chosen for v1 simplicity.
+**Effort:** human: ~4 hours / CC: ~15 min
+**How:** Expand `TaskCategory` enum (migration), re-introduce a `value_category_map` table for many-to-many mapping, update the digest engine to join through the mapping table, and expand the preset values list to 12-15 options.
+**Priority:** After Gentle Mirror v1 is shipped and validated with real family data. Let usage patterns inform which granular values are needed.
+**Depends on:** Gentle Mirror v1 complete.
 
 ### Task templates for cold-start
 **What:** Starter task templates ("Home Maintenance", "Health & Wellness", "Errands") that pre-fill 10-15 common tasks with sensible recurrence rules and durations.
@@ -29,3 +33,11 @@
 **Effort:** human: ~2 hours / CC: ~10 min
 **How:** A "Start with templates" option during board creation. Templates are hardcoded JSON (not a database feature). Each template includes title, category, recurrence_rule, estimated_duration_minutes, and preferred_time_of_day.
 **Priority:** Nice-to-have — can add anytime post-v1.
+
+### Weekly LLM summary paragraph
+**What:** Add a warm, LLM-generated summary paragraph at the top of the weekly digest that narrates the whole week in one paragraph.
+**Why:** The digest currently has individual elements (bars, cards, callouts) but no unified narrative. A summary paragraph like "A strong week for Pooja and Sukhi. The kitchen was spotless, but health tasks slipped for the second week..." would be the strongest "it knows us" moment.
+**Effort:** human: ~2 hours / CC: ~10 min
+**How:** One additional LLM call during digest generation with a summary prompt template. Stored in `digest_insights` with type "summary". Template fallback for when LLM is unavailable.
+**Priority:** Add after Gentle Mirror v1 ships and LLM prompts are tuned. This builds on the existing LLM integration.
+**Depends on:** Gentle Mirror v1 complete.
