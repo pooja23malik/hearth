@@ -15,6 +15,8 @@ model Board {
 
   members Member[]
   tasks   Task[]
+  values  BoardValue[]
+  digests WeeklyDigest[]
 
   @@map("boards")
 }
@@ -27,6 +29,8 @@ model Member {
   is_creator   Boolean  @default(false)
   active       Boolean  @default(true)
   created_at   DateTime @default(now())
+
+  last_viewed_digest_week DateTime?
 
   board             Board         @relation(fields: [board_id], references: [id], onDelete: Cascade)
   created_tasks     Task[]        @relation("TaskCreator")
@@ -107,4 +111,60 @@ model TaskHistory {
   completer Member @relation("HistoryCompleter", fields: [completed_by], references: [id])
 
   @@map("task_history")
+}
+
+model BoardValue {
+  id         String       @id @default(uuid())
+  board_id   String
+  name       String
+  category   TaskCategory
+  priority   Int
+  created_at DateTime     @default(now())
+
+  board  Board              @relation(fields: [board_id], references: [id], onDelete: Cascade)
+  scores DigestValueScore[]
+
+  @@unique([board_id, category])
+  @@map("board_values")
+}
+
+model WeeklyDigest {
+  id         String   @id @default(uuid())
+  board_id   String
+  week_start DateTime
+  total_tasks_due       Int @default(0)
+  total_tasks_completed Int @default(0)
+  created_at DateTime @default(now())
+
+  board    Board              @relation(fields: [board_id], references: [id], onDelete: Cascade)
+  scores   DigestValueScore[]
+  insights DigestInsight[]
+
+  @@unique([board_id, week_start])
+  @@map("weekly_digests")
+}
+
+model DigestValueScore {
+  id              String @id @default(uuid())
+  digest_id       String
+  value_id        String
+  tasks_due       Int
+  tasks_completed Int
+  alignment_pct   Float?
+
+  digest WeeklyDigest @relation(fields: [digest_id], references: [id], onDelete: Cascade)
+  value  BoardValue   @relation(fields: [value_id], references: [id], onDelete: Cascade)
+
+  @@map("digest_value_scores")
+}
+
+model DigestInsight {
+  id        String @id @default(uuid())
+  digest_id String
+  type      String
+  text      String
+
+  digest WeeklyDigest @relation(fields: [digest_id], references: [id], onDelete: Cascade)
+
+  @@map("digest_insights")
 }

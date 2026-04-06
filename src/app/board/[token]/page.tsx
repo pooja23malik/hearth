@@ -7,6 +7,7 @@ import TaskCard from "@/components/TaskCard";
 import AddTask from "@/components/AddTask";
 import TaskDetail from "@/components/TaskDetail";
 import BoardSettings from "@/components/BoardSettings";
+import DigestPage from "@/components/DigestPage";
 
 import type { Member, Task, Board } from "@/lib/types";
 
@@ -14,13 +15,14 @@ const TABS = [
   { key: "all", label: "All" },
   { key: "my", label: "My Tasks" },
   { key: "overdue", label: "Overdue" },
+  { key: "digest", label: "Digest" },
 ] as const;
 
 export default function BoardPage() {
   const params = useParams<{ token: string }>();
   const [board, setBoard] = useState<Board | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [tab, setTab] = useState<"all" | "my" | "overdue">("all");
+  const [tab, setTab] = useState<"all" | "my" | "overdue" | "digest">("all");
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
@@ -226,6 +228,9 @@ export default function BoardPage() {
                 {overdueCount}
               </span>
             )}
+            {t.key === "digest" && (
+              <span className="ml-1 inline-block h-2 w-2 rounded-full bg-accent" />
+            )}
             {tab === t.key && (
               <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent" />
             )}
@@ -233,49 +238,60 @@ export default function BoardPage() {
         ))}
       </nav>
 
-      {/* Task list */}
-      <div className="space-y-2">
-        {tasks.length === 0 ? (
-          <div className="py-12 text-center">
-            {tab === "all" && (
-              <>
-                <p className="text-lg text-text-secondary">
-                  Add your first task — what needs doing this week?
-                </p>
-                <p className="mt-1 text-sm text-text-secondary/60">↓</p>
-              </>
-            )}
-            {tab === "my" && (
-              <p className="text-lg text-text-secondary">
-                No tasks assigned to you yet
-              </p>
-            )}
-            {tab === "overdue" && (
-              <p className="text-lg text-text-secondary">
-                All caught up!
-              </p>
+      {/* Content area */}
+      {tab === "digest" ? (
+        <DigestPage
+          boardToken={params.token}
+          members={board.members}
+          isCreator={currentMember?.is_creator || false}
+        />
+      ) : (
+        <>
+          {/* Task list */}
+          <div className="space-y-2">
+            {tasks.length === 0 ? (
+              <div className="py-12 text-center">
+                {tab === "all" && (
+                  <>
+                    <p className="text-lg text-text-secondary">
+                      Add your first task — what needs doing this week?
+                    </p>
+                    <p className="mt-1 text-sm text-text-secondary/60">↓</p>
+                  </>
+                )}
+                {tab === "my" && (
+                  <p className="text-lg text-text-secondary">
+                    No tasks assigned to you yet
+                  </p>
+                )}
+                {tab === "overdue" && (
+                  <p className="text-lg text-text-secondary">
+                    All caught up!
+                  </p>
+                )}
+              </div>
+            ) : (
+              tasks.map((task) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  onComplete={handleComplete}
+                  onClick={setSelectedTask}
+                />
+              ))
             )}
           </div>
-        ) : (
-          tasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onComplete={handleComplete}
-              onClick={setSelectedTask}
-            />
-          ))
-        )}
-      </div>
 
-      {/* Add task */}
-      <div className="sticky bottom-4 mt-4">
-        <AddTask
-          members={board.members}
-          currentMemberId={currentMemberId || ""}
-          onAdd={loadTasks}
-        />
-      </div>
+          {/* Add task */}
+          <div className="sticky bottom-4 mt-4">
+            <AddTask
+              members={board.members}
+              currentMemberId={currentMemberId || ""}
+              onAdd={loadTasks}
+            />
+          </div>
+        </>
+      )}
 
       {/* Task detail panel */}
       {selectedTask && (

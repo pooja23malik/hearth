@@ -1,22 +1,52 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 
 @theme {
+  /* Core */
   --color-bg-primary: #FAFAF8;
   --color-bg-card: #FFFFFF;
   --color-text-primary: #1A1A1A;
-  --color-text-secondary: #6B6B6B;
+  --color-text-secondary: #7A7068;
   --color-accent: #2B8A8A;
   --color-accent-hover: #237272;
   --color-danger: #D4604A;
   --color-success: #4A9B6D;
+  --color-warning: #C4944A;
   --color-badge-recurring: #D4E8EC;
   --color-badge-personal: #E8D4EC;
+
+  /* Digest — alignment bars */
+  --color-alignment-on-track: #2B8A8A;
+  --color-alignment-slipping: #C4944A;
+  --color-alignment-gap: #D4604A;
+
+  /* Digest — gap callout */
+  --color-gap-bg: #FEF3F0;
+  --color-gap-border: #E8C5BC;
+  --color-gap-text: #8A4A3A;
+
+  /* Digest — insight cards */
+  --color-insight-border: #2B8A8A;
+  --color-insight-tag-bg: #D4E8EC;
+  --color-insight-tag-text: #2B8A8A;
+
+  /* Digest — streak celebration */
+  --color-streak-bg: #F0F8F4;
+  --color-streak-text: #3A7A5A;
+
+  /* Value chips */
+  --color-chip-selected-bg: #2B8A8A;
+  --color-chip-unselected-border: #D0D0D0;
+
+  /* Font families */
+  --font-display: 'Fraunces', serif;
+  --font-body: 'DM Sans', sans-serif;
 }
 
 body {
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-body);
 }
 
 /* Focus outline for accessibility */
