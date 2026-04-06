@@ -36,10 +36,12 @@ type DigestResponse = {
   weekEnd?: string;
   memberActivity?: Array<{
     memberId: string;
-    name: string;
-    avatarColor: string;
-    count: number;
-    topCategory: string;
+    memberName?: string;
+    name?: string;
+    avatarColor?: string;
+    count?: number;
+    taskCount?: number;
+    topCategory?: string;
   }>;
 };
 
@@ -291,28 +293,33 @@ export default function DigestPage({ boardToken, members, isCreator }: Props) {
       )}
 
       {/* Family Activity */}
-      {digest.memberActivity && digest.memberActivity.length > 0 && (
+      {members.length > 0 && (
         <section aria-label="Family activity" className="mb-4">
           <h3 className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-text-secondary">
             Family Activity
           </h3>
-          {digest.memberActivity.map((m) => (
-            <div key={m.memberId} className="mb-2 flex items-center gap-2.5">
-              <div
-                className="flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold text-white"
-                style={{ backgroundColor: m.avatarColor }}
-              >
-                {m.name[0].toUpperCase()}
+          {(digest.memberActivity || []).map((m) => {
+            const member = members.find((mb) => mb.id === m.memberId);
+            const displayName = m.memberName || member?.name || "Unknown";
+            const avatarColor = member?.avatar_color || "#999";
+            return (
+              <div key={m.memberId} className="mb-2 flex items-center gap-2.5">
+                <div
+                  className="flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold text-white"
+                  style={{ backgroundColor: avatarColor }}
+                >
+                  {displayName[0].toUpperCase()}
+                </div>
+                <span className="flex-1 text-[14px]">{displayName}</span>
+                <span
+                  className="text-[14px] text-text-secondary"
+                  style={{ fontVariantNumeric: "tabular-nums" }}
+                >
+                  {m.taskCount || m.count || 0} tasks
+                </span>
               </div>
-              <span className="flex-1 text-[14px]">{m.name}</span>
-              <span
-                className="text-[14px] text-text-secondary"
-                style={{ fontVariantNumeric: "tabular-nums" }}
-              >
-                {m.count} tasks
-              </span>
-            </div>
-          ))}
+            );
+          })}
         </section>
       )}
     </div>

@@ -222,10 +222,13 @@ export async function computeDigestData(
   // Count tasks due per category this week
   const dueByCat = new Map<TaskCategory, number>();
   for (const task of tasks) {
-    // A task is "due this week" if it existed before weekEnd and could have
-    // an occurrence in this week. For non-recurring completed tasks created
-    // before the week, they count as 1 due.
-    if (task.created_at > weekEnd) continue;
+    // A task is "due this week" if it could have had an occurrence in this week.
+    // For recurring tasks: they are always considered due if they exist on the board.
+    // For non-recurring tasks: only due if next_due_date falls within the week.
+    if (!task.recurrence_rule && task.next_due_date) {
+      const dueDate = new Date(task.next_due_date);
+      if (dueDate < weekStart || dueDate > weekEnd) continue;
+    }
 
     const occurrences = getOccurrencesInWeek(
       task.recurrence_rule,

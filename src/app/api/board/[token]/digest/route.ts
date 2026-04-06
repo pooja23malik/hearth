@@ -169,7 +169,9 @@ export async function GET(request: NextRequest) {
         );
         if (raw) {
           try {
-            patternTexts = JSON.parse(raw);
+            // Strip markdown code fences if present (```json ... ```)
+            const cleaned = raw.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
+            patternTexts = JSON.parse(cleaned);
           } catch {
             // LLM returned non-JSON, use as single insight
             patternTexts = [{ type: "observation", text: raw }];
@@ -242,9 +244,9 @@ export async function GET(request: NextRequest) {
 function formatSignalFallback(signal: { type: string; data: Record<string, unknown> }): string {
   switch (signal.type) {
     case "workload":
-      return `${signal.data.memberName} completed ${signal.data.percentage}% of all tasks this week.`;
+      return `${signal.data.memberName} completed ${signal.data.share}% of all tasks this week.`;
     case "dominance":
-      return `${signal.data.memberName} handles ${signal.data.percentage}% of ${signal.data.category} tasks.`;
+      return `${signal.data.memberName} handles ${signal.data.share}% of ${signal.data.category} tasks.`;
     case "streak":
       return `${signal.data.category} tasks have been fully completed for ${signal.data.weeks} weeks in a row!`;
     case "neglect":
