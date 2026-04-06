@@ -1,5 +1,5 @@
 const LLM_ENDPOINT = process.env.LLM_ENDPOINT || "http://localhost:11434";
-const LLM_MODEL = process.env.LLM_MODEL || "gemma3";
+const LLM_MODEL = process.env.LLM_MODEL || "gemma4:26b";
 const TIMEOUT_MS = 10_000;
 
 export async function generateInsight(
