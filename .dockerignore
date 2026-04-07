@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+.gstack
+.context
+hearth
+*.md
+!package.json
+!package-lock.json
