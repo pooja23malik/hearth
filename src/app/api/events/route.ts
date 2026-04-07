@@ -22,16 +22,29 @@ export async function GET(request: NextRequest) {
   // Send initial connection confirmation
   writer.write(encoder.encode("event: connected\ndata: {}\n\n"));
 
-  // Keep-alive heartbeat every 15 seconds
+  // Keep-alive heartbeat every 30 seconds (longer interval reduces async hook pressure in dev)
   const heartbeat = setInterval(() => {
     writer.write(encoder.encode(": ping\n\n")).catch(() => {
       clearInterval(heartbeat);
     });
-  }, 15000);
+  }, 30000);
+
+  // In dev mode, close the connection after 2 minutes to prevent Turbopack's
+  // async hook tracker from accumulating a Map that exceeds max size.
+  // EventSource auto-reconnects, so the client won't notice.
+  const isDev = process.env.NODE_ENV !== "production";
+  const maxLifetime = isDev
+    ? setTimeout(() => {
+        clearInterval(heartbeat);
+        unsubscribe(boardId, memberId, writer);
+        writer.close().catch(() => {});
+      }, 120_000)
+    : null;
 
   // Clean up on disconnect
   request.signal.addEventListener("abort", () => {
     clearInterval(heartbeat);
+    if (maxLifetime) clearTimeout(maxLifetime);
     unsubscribe(boardId, memberId, writer);
     writer.close().catch(() => {});
   });
