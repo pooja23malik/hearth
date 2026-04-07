@@ -9,6 +9,27 @@
 **How:** Workaround: run `next dev --no-turbopack` to use webpack instead. Or set `NODE_OPTIONS='--max-old-space-size=8192'` to delay the crash. Real fix needs to come from Next.js/Turbopack upstream.
 **Priority:** Workaround when it becomes annoying enough. Production (`next start`) is unaffected.
 
+### Extract tab content from board page
+**What:** Split `src/app/board/[token]/page.tsx` (310+ lines) into separate components for each tab's content (task list, digest, settings).
+**Why:** The board page is a monolith that renders task list, digest, member picker, and settings all in one file. Each new feature (smart scheduling, gamification) adds more conditional renders. It'll become unmaintainable.
+**Effort:** human: ~2 hours / CC: ~10 min
+**How:** Extract task list rendering into a `TaskList.tsx` component. The digest is already in `DigestPage.tsx`. Move the remaining state management into a custom hook or keep it in the page as a thin orchestrator.
+**Priority:** Do before starting the next UI feature.
+
+### Integration tests for digest API
+**What:** Add integration tests for `GET /api/board/[token]/digest` covering all 6 code paths: cold start, cache hit, cache miss, no values configured, generation error, and partial digest (week 2).
+**Why:** The digest API route has its own logic (cold start detection, cache management, LLM fallback) that's only been tested via manual QA. Unit tests cover the engine but not the route.
+**Effort:** human: ~3 hours / CC: ~15 min
+**How:** Create `src/app/api/board/[token]/digest/__tests__/route.test.ts`. Mock the Prisma client and LLM helper. Test each code path with specific assertions on the response shape and status codes.
+**Priority:** Do before deploying to production.
+
+### Add .env.example
+**What:** Create a `.env.example` file documenting required environment variables (`DATABASE_URL`, `LLM_ENDPOINT`, `LLM_MODEL`).
+**Why:** Anyone setting up locally (including future you) has to guess which env vars are needed. 5 minutes now saves confusion later.
+**Effort:** human: ~5 min / CC: ~2 min
+**How:** Create `.env.example` with commented entries for each variable and their defaults.
+**Priority:** Quick win, do anytime.
+
 ### Database backups
 **What:** Add automated PostgreSQL backups via `pg_dump` cron job.
 **Why:** The Docker named volume preserves data across restarts but doesn't protect against disk failure on the Ubuntu server. If the server dies, all task data is lost.
