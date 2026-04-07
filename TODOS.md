@@ -2,6 +2,13 @@
 
 ## Post-v1
 
+### Turbopack dev server crash (memory leak)
+**What:** The Turbopack dev server crashes after ~2-3 minutes due to its async hook tracker leaking ~112K entries/second into a V8 Map (hard cap at 16.7M entries).
+**Why:** Makes local development frustrating. The server needs constant restarts.
+**Effort:** human: N/A (upstream bug) / CC: ~1 min (workaround)
+**How:** Workaround: run `next dev --no-turbopack` to use webpack instead. Or set `NODE_OPTIONS='--max-old-space-size=8192'` to delay the crash. Real fix needs to come from Next.js/Turbopack upstream.
+**Priority:** Workaround when it becomes annoying enough. Production (`next start`) is unaffected.
+
 ### Database backups
 **What:** Add automated PostgreSQL backups via `pg_dump` cron job.
 **Why:** The Docker named volume preserves data across restarts but doesn't protect against disk failure on the Ubuntu server. If the server dies, all task data is lost.
